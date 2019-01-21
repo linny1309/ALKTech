@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title> Problem 3 | ALK Maps</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
+    <link rel="stylesheet" href="/Content/example.styles.min.css" >
+
+    <script src="//maps.alk.com/api/1.2/alkmaps.js" type="text/javascript"></script>
+  
+    <script type="text/javascript">
+        var map, markerLayer;
+        function init() {
+            ALKMaps.APIKey = "F61E9A1295D8A342A868030A51DC3CA6";
+            map = new ALKMaps.Map("map");
+            var layer = new ALKMaps.Layer.BaseMap("ALK Maps", {}, { displayInLayerSwitcher: false });
+            markerLayer = new ALKMaps.Layer.Markers("Markers");
+            map.addLayers([layer, markerLayer]);
+
+            var center = new ALKMaps.LonLat(-75.7, 40.9).transform(new ALKMaps.Projection("EPSG:4326"), map.getProjectionObject()); //transform to mercator
+            map.setCenter(center, 7);
+
+        }
+
+        function geocode() {
+            var address = document.getElementById('geoStreet').value;
+            var city = document.getElementById('geoCity').value;
+            var state = document.getElementById('geoState').value;
+            var zip = document.getElementById('geoZip').value;
+
+            var params = {
+                address:
+                    {
+                        addr: address,
+                        city: city,
+                        state: state,
+                        zip: zip
+                    },
+                listSize: 100,
+                async: true,
+                success: function (response) {
+                    var marker, icon, lon, lat, address;
+                    var display = "";
+                    for (var i = 0; i < response.length; i++) {
+                        lon = response[i].Coords.Lon;
+                        lat = response[i].Coords.Lat;
+                        address = response[i].Address.StreetAddress;
+                        icon = new ALKMaps.Icon(ALKMaps.IMAGE.FAVORITE, new ALKMaps.Size(30, 30));
+                        marker = new ALKMaps.Marker(
+                                new ALKMaps.LonLat(lon, lat),
+                                icon,
+                                address,
+                                { mouseOver: true, labelOffset: "0px", map: map }
+                            );
+                        markerLayer.clearMarkers();
+                        markerLayer.addMarker(marker);
+
+                        display = "The long and lat is: " + lon + "," + lat + "\n" +  "The confidence meter is: " + this.ConfidenceLevel + "\n" + "The address is: " + address;
+                    }
+                    document.getElementById('geoResults').innerHTML = display;
+                }
+
+            };
+            map.geocode(params);
+        }
+    </script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-787590-29"></script>
+    <script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-787590-29');
+    </script>
+</head>
+<body onload="init()">
+    <div id="example-container">
+
+
+
+
+<h1>Problem 3</h1>
+
+<p>
+    This example inputs a street address and returns the address, coordinates and confidence level of that location.
+</p>
+
+<div id="map" style="width: 850px; height: 550px"></div>
+
+
+<div class="bottom-panel">
+    <div>
+        <label class="input">
+            <span>Street Address</span>
+            <input class="form-control" id='geoStreet' type='text' />
+        </label>
+    </div>
+    <div>
+        <label class="input">
+            <span>City</span>
+            <input class="form-control" id='geoCity' type='text' />
+        </label>
+    </div>
+    <div>
+        <label class="input">
+            <span>State</span>
+            <input class="form-control auto-width" id='geoState' type='text' size='2' />
+        </label>
+        <label class="input">
+            <span>Zip</span>
+            <input class="form-control auto-width" id='geoZip' type='text' size='5' />
+        </label>
+        <input class="btn btn-sm btn-primary" id="geoButton" type="submit" value="Search" onclick="geocode()" />
+    </div>
+    <textarea id="geoResults" style="width: 500px; height: 150px;"> </textarea>
+</div>
+
+
+    </div>
+
+
+    
+</body>
+</html>

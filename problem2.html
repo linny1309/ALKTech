@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Problem 2 | ALK Maps</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
+    <link rel="stylesheet" href="/Content/example.styles.min.css" >
+
+    <script src="//maps.alk.com/api/1.2/alkmaps.js" type="text/javascript"></script>
+  
+    <script type="text/javascript">
+        function init() {
+            ALKMaps.APIKey = "F61E9A1295D8A342A868030A51DC3CA6";
+            var map = new ALKMaps.Map("map");
+            var layer = new ALKMaps.Layer.BaseMap("ALK Maps", {}, { displayInLayerSwitcher: false });
+            map.addLayer(layer);
+            var center = new ALKMaps.LonLat(-74.438942, 39.362469).transform(new ALKMaps.Projection("EPSG:4326"), map.getProjectionObject()); //transform to mercator
+            map.setCenter(center, 7); 				
+            var routingLayer = new ALKMaps.Layer.Routing("Route Layer");
+            map.addLayer(routingLayer);
+            var markerLayer = new ALKMaps.Layer.Markers("Marker Layer");
+            map.addLayer(markerLayer);
+
+            var stops = [
+                    new ALKMaps.LonLat(-74.599, 40.361),
+                    new ALKMaps.LonLat(-74.570, 40.387),
+                    new ALKMaps.LonLat(-74.511, 40.375)
+            ];
+            stops = ALKMaps.LonLat.transformArray(stops, new ALKMaps.Projection("EPSG:4326"), map.getProjectionObject());
+            routingLayer.addRoute({
+                stops: stops,
+                functionOptions: {
+                    routeId: "AlktoWawa",
+                    showHandles: false,
+                    callback: function (results) {
+                        var  icon1 = new ALKMaps.Icon(ALKMaps.IMAGE.HOTEL, new ALKMaps.Size(24, 24));
+                        var  icon2 = new ALKMaps.Icon(ALKMaps.IMAGE.FUEL, new ALKMaps.Size(24, 24));
+                        var  icon3 = new ALKMaps.Icon(ALKMaps.IMAGE.REST_AREA, new ALKMaps.Size(24, 24));
+                        for (var i = 0; i < results.stops.length; i++) {
+                            if(i == 0)
+                            {
+                            var mkr1 = new ALKMaps.Marker(
+                                new ALKMaps.LonLat(results.stops[i].x, results.stops[i].y),
+                                icon1.clone(),
+                                null, 
+                                {
+                                    map: map,
+                                    eventListeners: {
+                                        
+                                        "markerclick": function (evt) {
+                                            map.addPopup(this.popup, true);
+                                            this.popup.show();
+                                            return false;
+                                        },
+                                        "markerover": function (evt) {
+                                            map.addPopup(this.popup, true);
+                                            this.popup.show();
+                                            return false; 
+                                        }
+                                    }
+                                }
+                            );
+
+                            mkr1.popup = new ALKMaps.Popup.Anchored("anchored",
+                                
+                                new ALKMaps.LonLat(results.stops[i].x, results.stops[i].y),
+                                new ALKMaps.Size(180, 100),
+                                "<p><b>Location:</b> ALK HQ<br/>",
+                                icon1,
+                                true
+                            );
+
+                            markerLayer.addMarker(mkr1);
+                            }
+                            if(i == 1)
+                            {
+                            var mkr2 = new ALKMaps.Marker(
+                                new ALKMaps.LonLat(results.stops[i].x, results.stops[i].y),
+                                icon2.clone(),
+                                null,
+                                {
+                                    map: map,
+                                    eventListeners: {
+                                        "markerclick": function (evt) {
+                                            map.addPopup(this.popup, true);
+                                            this.popup.show();
+                                            return false; 
+                                        },
+                                        "markerover": function (evt) {
+                                            map.addPopup(this.popup, true);
+                                            this.popup.show();
+                                            return false; 
+                                        }
+                                    }
+                                }
+                            );
+
+                            mkr2.popup = new ALKMaps.Popup.Anchored("anchored",
+                                
+                                new ALKMaps.LonLat(results.stops[i].x, results.stops[i].y),
+                                new ALKMaps.Size(180, 100),
+                                "<p><b>Location:</b> Exxon<br/>",
+                                icon2,
+                                true
+                            );
+
+                            markerLayer.addMarker(mkr2);
+                            }
+                            if(i == 2)
+                            {
+                            var mkr3 = new ALKMaps.Marker(
+                                
+                                new ALKMaps.LonLat(results.stops[i].x, results.stops[i].y),
+                                icon3.clone(),
+                                null, 
+                                {
+                                    map: map,
+                                    eventListeners: {
+                                        "markerclick": function (evt) {
+                                            map.addPopup(this.popup, true);
+                                            this.popup.show();
+                                            return false;
+                                        },
+                                        "markerover": function (evt) {
+                                            map.addPopup(this.popup, true);
+                                            this.popup.show();
+                                            return false; 
+                                        }
+                                    }
+                                }
+                            );
+
+                            mkr3.popup = new ALKMaps.Popup.Anchored("anchored",
+
+                                new ALKMaps.LonLat(results.stops[i].x, results.stops[i].y),
+                                new ALKMaps.Size(180, 100),
+                                "<p><b>Location:</b> Wawa<br/",
+                                icon3,
+                                true
+                            );
+
+                            markerLayer.addMarker(mkr3);
+                            }
+                        }
+                        map.setCenter(map.getCenter(), map.getZoom() - 1);
+                    }
+                },
+                routeOptions: {
+                    highwayOnly: false,
+                    tollDiscourage: true
+                },
+                reportOptions: {}
+            });
+        }
+    </script>
+</head>
+<body onload="init()">
+    <div id="example-container">
+
+<h1>Problem 2</h1>
+
+<p>
+    This website displays a route starting from the ALK HQ leading to a gas station, finally ending up at Wawa in Dayton. When the icons are clicked or hovered over, a description of the location is shown. 
+</p>
+
+<div id="map" style="width: 850px; height: 550px"></div>
+
+    </div>
+    
+</body>
+</html>

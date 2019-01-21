@@ -1,0 +1,79 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Problem 1 | ALK Maps</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
+    <link rel="stylesheet" href="/Content/example.styles.min.css" >
+
+    <script src="//maps.alk.com/api/1.2/alkmaps.js" type="text/javascript"></script>
+  
+    <script type="text/javascript">
+        var map;
+        function init() {
+            ALKMaps.APIKey = "F61E9A1295D8A342A868030A51DC3CA6";//You will need to replace this with your own API key
+
+            map = new ALKMaps.Map("map",
+                  {
+                      displayProjection: new ALKMaps.Projection("EPSG:4326")
+                  });
+            var baseMap = new ALKMaps.Layer.BaseMap("Base Map");
+
+            var style = new ALKMaps.Style({
+                strokeColor: "green",
+                strokeWidth: 6,
+                pointRadius: 8,
+                fillColor: "green",
+                fillOpacity: 0.15,
+            }, null);
+            styleMap = new ALKMaps.StyleMap({ default: style });
+            var vectorLayer = new ALKMaps.Layer.Vector("Vector Layer", { styleMap: styleMap });
+
+            map.addLayers([baseMap, vectorLayer]);
+
+
+
+            var center = new ALKMaps.Geometry.Point(-74.599, 40.361).transform(new ALKMaps.Projection("EPSG:4326"), map.getProjectionObject())
+            var square = ALKMaps.Geometry.Polygon.createGeodesicPolygon(center, 10000, 20, 0, map.getProjectionObject());
+            var squareFeature = new ALKMaps.Feature.Vector(square, null, null);
+
+            var features = [squareFeature];
+
+            vectorLayer.addFeatures(features);
+
+            var lonlat = new ALKMaps.LonLat(-74.599, 40.361);
+            lonlat.transform(new ALKMaps.Projection("EPSG:4326"), map.getProjectionObject());//transform required when setting map center in mercator
+            map.setCenter(lonlat, 8)
+        }
+    </script>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-787590-29"></script>
+    <script>window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-787590-29');
+    </script>
+</head>
+<body onload="init()">
+    <div id="example-container">
+
+
+
+
+<h1>Problem 1</h1>
+
+<p>
+    This website displays how to create a circle polygon around a given point. The more sides there are, the more it resembles a circle. 
+</p>
+
+<div id="map" style="width: 850px; height: 550px"></div>
+
+    </div>
+
+
+    
+</body>
+</html>
